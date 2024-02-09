@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    
+    <style>
+        .container {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+.left-pane {
+    flex: 1;
+    background-color: #f2f2f2;
+    padding:20px;
+    border-radius: 5px;
+}
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    display:flex;
+    justify-content:space-between;
+    align-items: center;
+    font-size: 20px;
+    font-weight: 700;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    
+}
+.right-pane {
+    flex: 1;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+.right-pane input{
+  border: none;
+  height: 40px;
+  text-align: center;
+  font-size: 20px;
+
+}
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="left-pane">
+            <h1>Task List</h1>
+            <ul class="ul">
+               
+            </ul>
+        </div>
+        <div class="right-pane">
+            <input type="text" id="txttoDo" placeholder="I Need To Add "/>
+          </div>
+    </div>
+</body>
+<script>
+    let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+function addTaskToList(task) {
+    const li = document.createElement('li');
+    li.innerText = task.text;
+    li.style.textDecoration = task.completed ? 'line-through' : 'none';
+
+    const chkBox = document.createElement('input');
+    chkBox.type = "checkbox";
+    chkBox.style.width = "20px";
+    chkBox.style.height = "20px";
+    chkBox.checked = task.completed;
+    chkBox.addEventListener('change', function() {
+        task.completed = this.checked;
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+        li.style.textDecoration = this.checked ? 'line-through' : 'none';
+    });
+
+    const btn = document.createElement('button');
+    btn.innerText = "X";
+    btn.addEventListener('click', function() {
+        tasks = tasks.filter(t => t !== task);
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+        li.remove();
+    });
+
+    li.append(chkBox, btn);
+    document.querySelector('.ul').append(li);
+}
+
+tasks.forEach(addTaskToList);
+
+const input = document.querySelector('#txttoDo');
+input.addEventListener('keyup', function(e) {
+    if (e.key == "Enter") {
+        const task = { text: e.target.value, completed: false };
+        tasks.push(task);
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+        addTaskToList(task);
+        e.target.value = "";
+    }
+});
+</script>
+</html>
